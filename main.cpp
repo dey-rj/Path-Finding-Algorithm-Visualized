@@ -28,6 +28,7 @@ class cell {
     public:
         Color color;
         bool isWall;
+        pair<int, int> parent;
 } grid[rows][cols];
 
 
@@ -54,6 +55,7 @@ void init() {
     // Ensure first and last cell is a walkable path
     grid[0][0].isWall = false;
     grid[0][0].color = BLACK;
+    grid[0][0].parent = {-1, -1};
     grid[rows-1][cols-1].isWall = false;
     grid[rows-1][cols-1].color = BLACK;
 
@@ -72,6 +74,15 @@ void drawGrid() {
     } 
 }
 
+void drawPath() {
+    int x = rows-1;
+    int y = cols-1;
+    while(x>=0 && y>=0) {
+        DrawRectangle(padding + y * cellThickness, padding + x * cellThickness, cellThickness, cellThickness, {245, 200, 32, 255});
+        tie(x, y) = grid[x][y].parent;
+    }
+}
+
 void pushNeighbours(int row, int col) {
     // top
     if(row-1 >= 0) {
@@ -79,6 +90,7 @@ void pushNeighbours(int row, int col) {
             q.push({row-1, col});
             visited[row-1][col] = true;
             grid[row-1][col].color = fillColor;
+            grid[row-1][col].parent = {row, col};
         }
     }
     // left
@@ -87,6 +99,7 @@ void pushNeighbours(int row, int col) {
             q.push({row, col-1});
             visited[row][col-1] = true;
             grid[row][col-1].color = fillColor;
+            grid[row][col-1].parent = {row, col};
         }
     }
     // bottom
@@ -95,6 +108,7 @@ void pushNeighbours(int row, int col) {
             q.push({row+1, col});
             visited[row+1][col] = true;
             grid[row+1][col].color = fillColor;
+            grid[row+1][col].parent = {row, col};
         }
     }
     // right
@@ -103,6 +117,7 @@ void pushNeighbours(int row, int col) {
             q.push({row, col+1});
             visited[row][col+1] = true;
             grid[row][col+1].color = fillColor;
+            grid[row][col+1].parent = {row, col};
         }
     }
 }
@@ -146,12 +161,12 @@ int main() {
     SetTargetFPS(60);
 
     init();
-    ClearBackground({46, 60, 66, 255});
+    ClearBackground({18, 18, 18, 255});
 
     while (!WindowShouldClose()) {
 
         if (IsKeyPressed(KEY_R)) {
-            ClearBackground({46, 60, 66, 255});
+            ClearBackground({18, 18, 18, 255});
             init();
         }
 
@@ -165,8 +180,9 @@ int main() {
                 DrawText("No Path Found!", 20, 20, 30, GREEN); 
             }
             if(status == 2) {
-                animate = false;
                 DrawText("Path Found!", 20, 20, 30, GREEN); 
+                drawPath();
+                animate = false;
             }
         }
         EndDrawing();
