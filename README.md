@@ -1,7 +1,7 @@
 # 🧭 Path Finding Algorithm (Visualization using Raylib)
 
 A simple and interactive **maze traversal visualizer** built using **C++** and **raylib**.  
-This project demonstrates how different path finding algorithms explores a grid.
+This project demonstrates how different path finding algorithms explores a maze.
 ---
 
 ## Features
@@ -9,14 +9,17 @@ This project demonstrates how different path finding algorithms explores a grid.
 - Random maze generation (walls + paths)
 - Path finding visualization
 - Restart functionality (`R` key)
-- Animation speed control
+- Choose desired algorithm (`1, 2,...` keys)
+- Final path tracing with path length calculation
+- Animation speed control (pending)
 ---
 
 ## Preview
 
-- Black cells → Walkable path  
-- White cells → Walls  
-- Pink cells → Visited cells
+- Black cells → Walls  
+- White cells → Walkable Paths  
+- Blue cells → Visited cells
+- Pink cells → Final path
 
 ---
 
@@ -38,8 +41,20 @@ This project demonstrates how different path finding algorithms explores a grid.
   - Processes a limited number of nodes 
   - Expands neighbors 
 - Stops when:
-  - Destination is reached ✅
-  - Queue becomes empty ❌
+  - Destination is reached 
+  - Queue becomes empty 
 
 ---
+
+### DFS
+- Uses a `stack` to explore nodes level by level.
+- Each frame:
+  - Processes a limited number of nodes 
+  - Expands neighbors 
+- Stops when:
+  - Destination is reached 
+  - Stack becomes empty
+
+---
+
 

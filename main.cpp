@@ -63,7 +63,7 @@ void init(int opt) {
     if(opt == 0) {        
         for(int i=0; i<rows; i++) {
             for(int j=0; j<cols; j++) {
-                int prob = rand() % 3;
+                int prob = rand() % 4;
                 grid[i][j].isWall = (prob==0) ? true : false;
                 if(grid[i][j].isWall) grid[i][j].color = BLACK;
                 else grid[i][j].color = WHITE;
