@@ -2,6 +2,7 @@
 
 A simple and interactive **maze traversal visualizer** built using **C++** and **raylib**.  
 This project demonstrates how different path finding algorithms explores a maze.
+<img width="1903" height="1079" alt="Image" src="https://github.com/user-attachments/assets/49cb82c0-8b80-4c4b-a6bc-ae25cae85019" />
 ---
 
 ## Features
