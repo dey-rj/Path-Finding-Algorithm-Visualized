@@ -10,16 +10,20 @@
 using namespace std;
 
 
-const int screenWidth = 1280;
-const int screenHeight = 720;
-const int cellThickness = 5;
+const int screenWidth = 1920;
+const int screenHeight = 1080;
+const int cellThickness = 20;
 const int padding = 100;
 const int rows = (screenHeight - (1.1*padding)) / cellThickness;
 const int cols = (screenWidth - (2*padding)) / cellThickness;
-const Color fillColor = (Color) {230, 44, 100, 255};
-const Color pathColor = (Color) {245, 200, 32, 255};
+const Color fillColor = (Color) {23, 201, 255, 255};
+const Color pathColor = (Color) {230, 44, 100, 255};
+const Color bgColor = (Color) {0, 0, 0, 255};
+
 int algorithm = 0;
 bool animate = true;
+int pathLength = 0;
+
 queue<pair<int, int>> q;
 stack<pair<int, int>> st;
 vector<vector<bool>> visited(rows, vector<bool>(cols, false));
@@ -47,6 +51,7 @@ void init(int opt) {
     st = {};
     animate = true;
     algorithm = opt;
+    pathLength = 0;
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
@@ -58,26 +63,26 @@ void init(int opt) {
     if(opt == 0) {        
         for(int i=0; i<rows; i++) {
             for(int j=0; j<cols; j++) {
-                int prob = rand() % 4;
+                int prob = rand() % 3;
                 grid[i][j].isWall = (prob==0) ? true : false;
-                if(grid[i][j].isWall) grid[i][j].color = WHITE;
-                else grid[i][j].color = BLACK;
+                if(grid[i][j].isWall) grid[i][j].color = BLACK;
+                else grid[i][j].color = WHITE;
             }
         }
     }
     else {
         for(int i=0; i<rows; i++) {
             for(int j=0; j<cols; j++) {
-                if(!grid[i][j].isWall) grid[i][j].color = BLACK;
+                if(!grid[i][j].isWall) grid[i][j].color = WHITE;
             }
         }
     }
 
     // Ensure first and last cell is a walkable path
     grid[0][0].isWall = false;
-    grid[0][0].color = BLACK;
+    grid[0][0].color = WHITE;
     grid[rows-1][cols-1].isWall = false;
-    grid[rows-1][cols-1].color = BLACK;
+    grid[rows-1][cols-1].color = WHITE;
 
     q.push({0, 0});
     st.push({0, 0});
@@ -90,6 +95,7 @@ void setPath() {
     int x = rows-1;
     int y = cols-1;
     while(x>=0 && y>=0) {
+        pathLength++;
         grid[x][y].color = pathColor;
         tie(x, y) = grid[x][y].parent;
     }
@@ -113,10 +119,10 @@ void pushNeighbours(int row, int col) {
         }
     };
 
-    tryPush(row-1, col); // top
-    tryPush(row, col-1); // left
-    tryPush(row+1, col); // bottom
-    tryPush(row, col+1); // right
+    tryPush(row-1, col); 
+    tryPush(row, col-1); 
+    tryPush(row, col+1); 
+    tryPush(row+1, col); 
 }
 
 
@@ -160,27 +166,27 @@ int main() {
     SetTargetFPS(60);
 
     init(0);
-    ClearBackground({18, 18, 18, 255});
+    ClearBackground(bgColor);
 
     while (!WindowShouldClose()) {
 
         if (IsKeyPressed(KEY_R)) {
-            ClearBackground({18, 18, 18, 255});
+            ClearBackground(bgColor);
             init(0); 
         }
         else if (IsKeyPressed(KEY_ONE)) {
-            ClearBackground({18, 18, 18, 255});
+            ClearBackground(bgColor);
             init(1);
         }
         else if (IsKeyPressed(KEY_TWO)) {
-            ClearBackground({18, 18, 18, 255});
+            ClearBackground(bgColor);
             init(2);
         }
 
         BeginDrawing();
-            DrawText("R : New Map", 1125, 100, 20, WHITE);
-            DrawText("1 : BFS", 1125, 130, 20, WHITE);
-            DrawText("2 : DFS", 1125, 160, 20, WHITE); 
+            DrawText("R : New Map", screenWidth-screenWidth/13, screenHeight/8, 20, WHITE);
+            DrawText("1 : BFS", screenWidth-screenWidth/13, screenHeight/8 + 30, 20, WHITE);
+            DrawText("2 : DFS", screenWidth-screenWidth/13, screenHeight/8 + 60, 20, WHITE); 
 
             if(animate) {
                 drawGrid();
@@ -189,20 +195,29 @@ int main() {
                 switch(algorithm) {
                     case 0: status = 1;
                     break;
-                    case 1: status = bfs(); DrawText("Running BFS", 500, 20, 20, WHITE);
+                    case 1: status = bfs(); 
                     break;
-                    case 2: status = dfs(); DrawText("Running DFS", 500, 20, 20, WHITE);
+                    case 2: status = dfs();
                     break;
                 }
                 if(status == 0) {
                     animate = false;
-                    DrawText("No Path Found!", 20, 20, 30, GREEN); 
+                    DrawText("No Path Found!", 20, 20, 30, PINK); 
                 }
-                if(status == 2) {
-                    DrawText("Path Found!", 20, 20, 30, GREEN); 
+                else if(status == 1) {
+                    switch(algorithm) {
+                        case 1: DrawText("Running BFS...", 500, 20, 40, WHITE);
+                        break;
+                        case 2: DrawText("Running DFS...", 500, 20, 40, WHITE);
+                        break;
+                    }
+                }
+                else if(status == 2) {
+                    animate = false;
+                    ClearBackground(bgColor);
                     setPath();
                     drawGrid();
-                    animate = false;
+                    DrawText(TextFormat("Path Found! Length: %d", pathLength), 20, 20, 30, PINK); 
                 }
             }
         EndDrawing();
